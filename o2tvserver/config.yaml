@@ -1,0 +1,40 @@
+---
+name: O2tvServer
+version: 0.0.4
+slug: o2tvserver
+description: O2 TV Server
+url: "https://github.com/jaroslavhykel/hassio-addons/tree/main/o2tvserver"
+init: false
+panel_icon: mdi:television
+arch:
+  - amd64
+  - aarch64
+host_network: true
+webui: "http://[HOST]:[PORT:8081]/"
+homeassistant_api: true
+ports:
+  8081/tcp: 8081
+ports_description:
+  8081/tcp: O2 TV Service
+options:
+  o2_username: ""
+  o2_password: ""
+  o2_deviceid: ""
+  o2_webserver_ip: ""
+  system_packages: []
+  init_commands: []
+  args: ""
+schema:
+  o2_username:
+    - str
+  o2_password:
+    - str
+  o2_deviceid:
+    - str
+  o2_webserver_ip:
+    - str
+  system_packages:
+    - str?
+  init_commands:
+    - str?
+  args: str?

@@ -1,0 +1,96 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: TVHeadend
+# Starts O2 server
+# ==============================================================================
+declare username
+declare password
+declare deviceid
+declare webserver_ip
+
+bashio::log.info "Starting O2 server..."
+
+username=$(bashio::config 'o2_username')
+password=$(bashio::config 'o2_password')
+deviceid=$(bashio::config 'o2_deviceid')
+webserver_ip=$(bashio::config 'o2_webserver_ip')
+
+cd /usr/local/lib/script.o2tv.server-master
+
+# Aktualizace konfiguracniho souboru
+if ! command -v jq &> /dev/null; then
+bashio::log.info "Chyba: Nástroj jq není nainstalován. Nainstalujte jej příkazem 'apt-get install jq' nebo podobným příkazem pro váš systém."
+exit 1
+fi
+
+if ! command -v sed &> /dev/null; then
+bashio::log.info "Chyba: Nástroj sed není nainstalován."
+exit 1
+fi
+
+CONFIG_FILE="config.txt"
+
+if [ ! -f "$CONFIG_FILE" ]; then
+bashio::log.info "Chyba: Konfigurační soubor $CONFIG_FILE neexistuje."
+exit 1
+fi
+
+if ! jq empty "$CONFIG_FILE" 2>/dev/null; then
+bashio::log.info "Chyba: Konfigurační soubor není validní JSON."
+exit 1
+fi
+
+current_username=$(jq -r '.username // empty' "$CONFIG_FILE")
+current_password=$(jq -r '.password // empty' "$CONFIG_FILE")
+current_deviceid=$(jq -r '.deviceid // empty' "$CONFIG_FILE")
+current_webserver_ip=$(jq -r '.webserver_ip // empty' "$CONFIG_FILE")
+
+changes_made=false
+
+# Funkce pro escapování speciálních znaků pro sed
+escape_for_sed() {
+echo "$1" | sed 's/[/&]/\&/g'
+}
+
+# Funkce pro nahrazení hodnoty v souboru pomocí sed
+replace_value() {
+local key=$1
+local current_value=$2
+local new_value=$3
+
+# Escapování hodnot pro sed
+local current_value_escaped=$(escape_for_sed "$current_value")
+local new_value_escaped=$(escape_for_sed "$new_value")
+
+# Použití sed pro nahrazení hodnoty
+sed -i "s|\"$key\"[[:space:]]*:[[:space:]]*\"$current_value_escaped\"|\"$key\":\"$new_value_escaped\"|g" "$CONFIG_FILE"
+}
+
+if [ "$current_username" != "$username" ]; then
+replace_value "username" "$current_username" "$username"
+changes_made=true
+fi
+
+if [ "$current_password" != "$password" ]; then
+replace_value "password" "$current_password" "$password"
+changes_made=true
+fi
+
+if [ "$current_deviceid" != "$deviceid" ]; then
+replace_value "deviceid" "$current_deviceid" "$deviceid"
+changes_made=true
+fi
+
+if [ "$current_webserver_ip" != "$webserver_ip" ]; then
+replace_value "webserver_ip" "$current_webserver_ip" "$webserver_ip"
+changes_made=true
+fi
+
+if [ "$changes_made" = true ]; then
+bashio::log.info "Konfigurační soubor byl aktualizován."
+else
+bashio::log.info "Žádné změny nebyly provedeny. Konfigurační soubor je aktuální."
+fi
+
+exec /usr/bin/python3 ./server.py

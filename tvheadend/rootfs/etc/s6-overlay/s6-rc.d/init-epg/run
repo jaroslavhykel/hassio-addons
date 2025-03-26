@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: TVHeadend
+# Starts O2 server
+# ==============================================================================
+
+exec /usr/local/bin/update-epg.sh

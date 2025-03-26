@@ -1,0 +1,40 @@
+---
+name: TV Headend
+version: 0.0.1
+slug: tv_headend
+description: TV streaming server and recorder
+url: https://github.com/jaroslavhykel/hassio-addons/tree/main/tvheadend
+init: false
+panel_icon: mdi:television
+arch:
+  - aarch64
+host_network: true
+webui: http://[HOST]:[PORT:9981]/
+usb: true
+udev: true
+homeassistant_api: true
+hassio_api: true
+stdin: true
+ports_description:
+  9981/tcp: TVH Web Interface
+  9982/tcp: TVH HTSP
+map:
+  - config:rw
+  - share:rw
+  - media:rw
+options:
+  epg_external: false
+  epg_addr: ""
+  system_packages: []
+  init_commands: []
+  args: ""
+schema:
+  epg_external:
+    - bool
+  epg_addr:
+    - str
+  system_packages:
+    - str?
+  init_commands:
+    - str?
+  args: str?

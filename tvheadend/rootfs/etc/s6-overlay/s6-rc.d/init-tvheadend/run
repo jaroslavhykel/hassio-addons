@@ -1,0 +1,24 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: TVHeadend
+# Executes user customizations on startup
+# ==============================================================================
+
+# Create recordings directory if not existing
+if ! bashio::fs.directory_exists '/media/tvheadend/recordings'; then
+    bashio::log.info "Creating default recordings directory at /media/tvheadend/recordings"
+    mkdir -p /media/tvheadend/recordings
+fi
+
+# Ensure config directory exists
+if ! bashio::fs.directory_exists '/config/tvheadend/'; then
+    bashio::log.info "Creating default configuration directory at /config/tvheadend/"
+    mkdir /config/tvheadend
+
+    timeout 20s /usr/bin/tvheadend --firstrun -u root -g root -c /config/tvheadend
+
+    bashio::log.info "Updating default DVR config with recordings folder and UTF-8 encoding"
+    find /config/tvheadend/dvr/config/ -type f -exec bash -c 'jq '\''.storage="/media/tvheadend/recordings" | .charset="UTF-8"'\'' "$1" > /tmp/tmp.json && mv /tmp/tmp.json "$1"' shell {} \; -quit
+
+fi

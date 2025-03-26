@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Home Assistant Community Add-on: Oneplay Server
+# Starts Oneplay Server
+# ==============================================================================
+declare username
+declare password
+declare deviceid
+declare webserver_ip
+
+bashio::log.info "Starting  Oneplay Server..."
+
+# defaults = {'WEBSERVER_IP' : '0.0.0.0', 'WEBSERVER_PORT' : 8082, 'EPG_DNU_ZPETNE' : 1, 'EPG_DNU_DOPREDU' : 1, 'INTERVAL_STAHOVANI_EPG' : 0, 'ODSTRANIT_HD' : 0, 'POUZIVAT_CISLA_KANALU' : 0, 'PORADI_SLUZBY' : -1, 'PIN' : '4321', 'DEBUG' : 0, 'CESTA_FFMPEG' : '/usr/bin/ffmpeg'} 
+
+export USERNAME=$(bashio::config 'o2_username')
+export PASSWORD=$(bashio::config 'o2_password')
+export DEVICEID=$(bashio::config 'o2_deviceid')
+export WEBSERVER_IP=$(bashio::config 'o2_webserver_ip')
+
+cd /usr/local/lib/script.oneplay.server-master
+
+exec /usr/bin/python3 ./server.py

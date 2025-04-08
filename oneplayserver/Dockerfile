@@ -6,6 +6,7 @@ FROM $BUILD_FROM
 ARG TZ="Etc/UTC"
 
 ENV HOME="/config"
+ENV container="DOCKER"
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
@@ -16,15 +17,13 @@ RUN \
   && apk add --no-cache py3-bottle \
   py3-websocket-client \
   && apk add --no-cache --virtual .build-deps \
-  zip \
-  wget \
+  git \
   && mkdir -p /usr/local/lib/ \
   && cd /usr/local/lib \
-  && wget https://github.com/waladir/script.oneplay.server/archive/refs/heads/master.zip \
-  && unzip master.zip \
-  && rm master.zip \
-  && cd script.oneplay.server-master \
+  && git clone https://github.com/waladir/script.oneplay.server.git \
+  && cd script.oneplay.server \
   && rm -r scripts \
+  && rm -r .git \
   && chmod +x server.py \
   && apk del --no-cache --purge .build-deps
 

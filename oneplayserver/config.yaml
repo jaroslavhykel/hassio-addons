@@ -1,6 +1,6 @@
 ---
 name: Oneplay Server
-version: 0.0.1
+version: 0.0.3
 slug: oneplayserver
 description: Oneplay TV Server
 url: "https://github.com/jaroslavhykel/hassio-addons/tree/main/o2tvserver"
@@ -16,23 +16,31 @@ ports:
   8082/tcp: 8082
 ports_description:
   8082/tcp: Oneplay TV Service
+map:
+  - share:rw
 options:
-  o2_username: ""
-  o2_password: ""
-  o2_deviceid: ""
-  o2_webserver_ip: ""
+  o2_username: null
+  o2_password: null
+  o2_deviceid: null
+  o2_webserver_ip: http://127.0.0.1:8082
+  share_epg: false
+  interval_download_epg: 0
+  day_epg_before: 1
+  day_epg_after: 1
+  debug: false
   system_packages: []
   init_commands: []
   args: ""
 schema:
-  o2_username:
-    - str
-  o2_password:
-    - str
-  o2_deviceid:
-    - str
-  o2_webserver_ip:
-    - str
+  o2_username: str
+  o2_password: str
+  o2_deviceid: str
+  o2_webserver_ip: str
+  share_epg: bool
+  interval_download_epg: int
+  day_epg_before: int
+  day_epg_after: int
+  debug: bool
   system_packages:
     - str?
   init_commands:

@@ -8,6 +8,10 @@ declare username
 declare password
 declare deviceid
 declare webserver_ip
+declare interval_download_epg
+declare day_epg_before
+declare day_epg_after
+declare debug
 
 bashio::log.info "Starting  Oneplay Server..."
 
@@ -17,7 +21,15 @@ export USERNAME=$(bashio::config 'o2_username')
 export PASSWORD=$(bashio::config 'o2_password')
 export DEVICEID=$(bashio::config 'o2_deviceid')
 export WEBSERVER_IP=$(bashio::config 'o2_webserver_ip')
+export INTERVAL_STAHOVANI_EPG=$(bashio::config 'interval_download_epg')
+export EPG_DNU_DOPREDU=$(bashio::config 'day_epg_after')
+export EPG_DNU_ZPETNE=$(bashio::config 'day_epg_before')
+export DEBUG=$(bashio::config 'debug')
 
-cd /usr/local/lib/script.oneplay.server-master
+bashio::log.info "EPG_DNU_DOPREDU: $EPG_DNU_DOPREDU"
+bashio::log.info "EPG_DNU_ZPETNE: $EPG_DNU_ZPETNE"
+bashio::log.info "INTERVAL_STAHOVANI_EPG: $INTERVAL_STAHOVANI_EPG"
+
+cd /usr/local/lib/script.oneplay.server
 
 exec /usr/bin/python3 ./server.py
